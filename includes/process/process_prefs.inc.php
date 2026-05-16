@@ -336,8 +336,9 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 			$prefsEmailSMTP = sterilize($_POST['prefsEmailSMTP']);			
 			$prefsContact = sterilize($_POST['prefsContact']);
 			$prefsEmailRegConfirm = sterilize($_POST['prefsEmailRegConfirm']);
-			$prefsEmailPassword = sterilize($_POST['prefsEmailPassword']);
-			if (($go == "email") && (!empty($row_prefs['prefsEmailPassword']))) $prefsEmailPassword = sterilize($row_prefs['prefsEmailPassword']);
+			// Preserve the encrypted value as-is unless user explicitly chooses to update it.
+			$prefsEmailPassword = $_POST['prefsEmailPassword'];
+			if (($go == "email") && (!empty($row_prefs['prefsEmailPassword']))) $prefsEmailPassword = $row_prefs['prefsEmailPassword'];
 			$prefsEmailFrom = sterilize($_POST['prefsEmailFrom']);
 			$prefsEmailUsername = sterilize($_POST['prefsEmailUsername']);
 			$prefsEmailHost = sterilize($_POST['prefsEmailHost']);
@@ -349,7 +350,7 @@ if ((isset($_SERVER['HTTP_REFERER'])) && (((isset($_SESSION['loginUsername'])) &
 			if ($_POST['change-email-password-choice'] == 1) {
 
 				// Encrypt the smtp password
-				$prefsEmailPassword = sterilize($_POST['prefsEmailPassword']);
+				$prefsEmailPassword = $_POST['prefsEmailPassword'];
 				$secretKey = base64_encode(bin2hex($password));
 				$nacl = base64_encode(bin2hex($server_root));
 				$prefsEmailPassword = simpleEncrypt($prefsEmailPassword, $secretKey, $nacl);
